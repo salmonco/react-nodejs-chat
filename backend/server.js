@@ -6,7 +6,7 @@ const io = require("socket.io")(server, {
   cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] },
 });
 
-app.use(express.static(__dirname + "/chat/build"));
+app.use(express.static("../frontend/build"));
 
 io.on("connection", (socket) => {
   console.log("소켓 커넥션 발생");
