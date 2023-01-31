@@ -8,13 +8,15 @@ const Join = () => {
   const [roomList, setRoomList] = useState([]);
   const [roomName, setRoomName] = useState("");
   const [capacity, setCapacity] = useState("8");
+  const [cntArr, setCntArr] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     socket.emit("enterLobby");
 
-    socket.on("roomList", (rooms) => {
+    socket.on("roomList", ({ rooms, cntArr }) => {
       setRoomList(rooms);
+      setCntArr(cntArr);
     });
 
     return () => socket.off("roomList");
@@ -30,7 +32,6 @@ const Join = () => {
     });
   };
 
-  // 현재 인원수 고려해야 함
   const joinRoom = (roomId) => {
     navigate("/chat", {
       state: { userName, roomId },
@@ -54,10 +55,13 @@ const Join = () => {
             <li
               key={index}
               onClick={(e) =>
-                !userName ? e.preventDefault() : joinRoom(room.roomId)
+                !userName || cntArr[index] >= room.capacity
+                  ? e.preventDefault()
+                  : joinRoom(room.roomId)
               }
             >
-              {room.roomName} / {room.createDate} / {room.capacity}
+              {room.roomName} / {room.createDate} / 인원: {cntArr[index]} /{" "}
+              {room.capacity}
             </li>
           ))}
         </ul>

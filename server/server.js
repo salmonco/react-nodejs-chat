@@ -29,8 +29,10 @@ io.on("connection", (socket) => {
   console.log("connection");
 
   socket.on("enterLobby", () => {
-    // console.log("users", getUsers());
-    socket.emit("roomList", getRooms());
+    const rooms = getRooms();
+    const cntArr = rooms.map((room) => getUsersInRoom(room.roomId).length);
+
+    socket.emit("roomList", { rooms, cntArr });
   });
 
   socket.on("addRoom", ({ roomName, capacity }) => {
@@ -85,8 +87,9 @@ io.on("connection", (socket) => {
   });
 
   const leaveRoomHandler = () => {
+    console.log("leave");
     const user = removeUser(socket.id);
-    // console.log("leave", getUsers());
+
     if (user) {
       io.to(user.roomId).emit("message", {
         userName: "admin",
@@ -99,7 +102,7 @@ io.on("connection", (socket) => {
     }
   };
 
-  // socket.on("leaveRoom", leaveRoomHandler);
+  socket.on("leaveRoom", leaveRoomHandler);
   socket.on("disconnect", leaveRoomHandler);
 });
 
