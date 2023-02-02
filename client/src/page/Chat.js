@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { SocketContext } from "../context/socket";
+import Container from "../component/Container";
+import Intro from "../component/Intro";
+import Box from "../component/Box";
+import ChatBox from "../component/ChatBox";
+import { Message, AdminMessage, MyMessage } from "../component/Message";
+import Wrapper from "../component/Wrapper";
+import ChatInput from "../component/ChatInput";
+import SendBtn from "../component/SendBtn";
+import User from "../component/User";
 
 const Chat = () => {
   const socket = useContext(SocketContext);
@@ -37,7 +46,7 @@ const Chat = () => {
     );
 
     socket.on("message", ({ userName, text }) => {
-      setMessages((prev) => [...prev, `${userName} : ${text}`]);
+      setMessages((prev) => [...prev, { userName, text }]);
     });
 
     return () => {
@@ -56,35 +65,49 @@ const Chat = () => {
 
   return (
     <>
-      <p>닉네임: {userName}</p>
-      <p>채팅방: {roomName}</p>
-      <p>채팅방id: {roomId}</p>
-      <p>개설일: {createDate}</p>
-      <p>
-        인원: {users.length} / {capacity}
-      </p>
-      <p>현재 채팅방에 있는 사람</p>
-      <ul>
+      <Container>
+        <Box>닉네임: {userName}</Box>
+        <Wrapper>
+          <Intro>{roomName}</Intro>
+          <span style={{ fontSize: "12px" }}>개설일: {createDate}</span>
+        </Wrapper>
+        <ChatBox>
+          <div style={{ padding: "5px 15px 0 15px" }}>
+            {messages.map((item, index) => (
+              <div style={{ margin: "15px 0" }} key={index}>
+                {item.userName === "admin" ? (
+                  <AdminMessage text={item.text} />
+                ) : item.userName === userName ? (
+                  <MyMessage text={item.text} />
+                ) : (
+                  <Message userName={item.userName} text={item.text} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div style={{ background: "#ffffff" }}>
+            <Wrapper>
+              <ChatInput
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              <SendBtn type="button" onClick={sendMessage}>
+                전송
+              </SendBtn>
+            </Wrapper>
+          </div>
+        </ChatBox>
+        <Wrapper>
+          <Intro>현재 채팅방에 있는 사람</Intro>
+          <span>
+            {users.length} / {capacity}
+          </span>
+        </Wrapper>
         {users.map((user, index) => (
-          <li key={index}>{user.userName}</li>
+          <User key={index}>{user.userName}</User>
         ))}
-      </ul>
-      <p>채팅하기</p>
-      <div>
-        <ul>
-          {messages.map((message, index) => (
-            <li key={index}>{message}</li>
-          ))}
-        </ul>
-      </div>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button type="button" onClick={sendMessage}>
-        전송
-      </button>
+      </Container>
     </>
   );
 };
