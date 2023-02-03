@@ -5,6 +5,7 @@ import Container from "../component/Container";
 import Intro from "../component/Intro";
 import Box from "../component/Box";
 import ChatBox from "../component/ChatBox";
+import SendBox from "../component/SendBox";
 import { Message, AdminMessage, MyMessage } from "../component/Message";
 import Wrapper from "../component/Wrapper";
 import ChatInput from "../component/ChatInput";
@@ -85,19 +86,19 @@ const Chat = () => {
               </div>
             ))}
           </div>
-          <div style={{ background: "#ffffff" }}>
-            <Wrapper>
-              <ChatInput
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-              <SendBtn type="button" onClick={sendMessage}>
-                전송
-              </SendBtn>
-            </Wrapper>
-          </div>
         </ChatBox>
+        <SendBox>
+          <Wrapper>
+            <ChatInput
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            <SendBtn type="button" onClick={sendMessage}>
+              전송
+            </SendBtn>
+          </Wrapper>
+        </SendBox>
         <Wrapper>
           <Intro>현재 채팅방에 있는 사람</Intro>
           <span>

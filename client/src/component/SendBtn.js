@@ -5,6 +5,7 @@ const SendBtn = styled.button`
   height: 40px;
   border: none;
   cursor: pointer;
+  border-radius: 0 0 7px 0;
 `;
 
 export default SendBtn;
