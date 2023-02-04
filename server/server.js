@@ -29,6 +29,14 @@ io.on("connection", (socket) => {
   console.log("connection");
 
   socket.on("enterLobby", () => {
+    let remove = [];
+    getRooms().forEach((room) => {
+      if (!getUsersInRoom(room.roomId).length) {
+        remove.push(room.roomId);
+      }
+    });
+    remove.forEach((roomId) => removeRoom(roomId));
+
     const rooms = getRooms();
     const cntArr = rooms.map((room) => getUsersInRoom(room.roomId).length);
 
