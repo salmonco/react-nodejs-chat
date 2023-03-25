@@ -1,4 +1,6 @@
 const express = require("express");
+const admin = require("firebase-admin");
+const serviceAccount = require("./serviceAccountKey.json");
 
 const server = () => {
   const app = express();
@@ -9,6 +11,10 @@ const server = () => {
       origin: "http://localhost:3000",
       credentials: true,
     },
+  });
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
   });
 
   // app.use(
