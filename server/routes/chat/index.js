@@ -5,9 +5,22 @@ const db = getFirestore();
 const chatsRef = db.collection("chat");
 const usersRef = db.collection("user");
 const roomsRef = db.collection("room");
-/* chat : { userName, text, date } */
+/* chat : { userName, text, date, roomId } */
 /* user : { userId, userName, roomId } */
 /* room : { roomId, roomName, capacity, createDate } */
+
+const getChatsInRoom = async (roomId) => {
+  const chats = [];
+  const chatsSnapshot = await chatsRef.get();
+
+  chatsSnapshot.docs.forEach((chatRef) => {
+    if (chatRef.data().roomId === roomId) {
+      chats.push(chatRef.data());
+    }
+  });
+
+  return chats;
+};
 
 const getUsersInRoom = async (roomId) => {
   const users = [];
@@ -81,21 +94,31 @@ const eventHandler = (io, socket) => {
 
       socket.join(roomId);
 
-      socket.emit("message", {
+      const welcomeMsg = {
         userName: "admin",
         text: `${userName}님, ${roomName}방에 오신것을 환영합니다.`,
-      });
-
-      socket.broadcast.to(roomId).emit("message", {
+        date: new Date().toISOString(),
+        roomId,
+      };
+      const joinMsg = {
         userName: "admin",
         text: `${userName}님이 들어왔습니다.`,
-      });
+        date: new Date().toISOString(),
+        roomId,
+      };
+
+      // await chatsRef.add(welcomeMsg);
+      await chatsRef.add(joinMsg);
+
+      socket.emit("message", welcomeMsg);
+      socket.broadcast.to(roomId).emit("message", joinMsg);
 
       io.to(roomId).emit("roomData", {
         roomId,
         roomName,
         capacity,
         createDate,
+        chats: await getChatsInRoom(roomId),
         users: await getUsersInRoom(roomId),
       });
     } catch (e) {
@@ -110,11 +133,16 @@ const eventHandler = (io, socket) => {
         .get();
       const userRef = userSnapshot.docs[0];
       const { roomId, userName } = userRef.data();
-
-      io.to(roomId).emit("message", {
+      const msg = {
         userName,
         text: message,
-      });
+        date: new Date().toISOString(),
+        roomId,
+      };
+
+      await chatsRef.add(msg);
+
+      io.to(roomId).emit("message", msg);
     } catch (e) {
       console.log(e);
     }
@@ -136,10 +164,16 @@ const eventHandler = (io, socket) => {
           doc.ref.delete();
         });
 
-        io.to(roomId).emit("message", {
+        const leaveMsg = {
           userName: "admin",
           text: `${userName}님이 나갔습니다.`,
-        });
+          date: new Date().toISOString(),
+          roomId,
+        };
+
+        await chatsRef.add(leaveMsg);
+
+        io.to(roomId).emit("message", leaveMsg);
 
         io.to(roomId).emit("roomData", {
           users: await getUsersInRoom(roomId),

@@ -21,7 +21,7 @@ const Chat = () => {
   const [createDate, setCreateDate] = useState("");
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [chats, setChats] = useState([]);
   const location = useLocation();
 
   useEffect(() => {
@@ -33,12 +33,17 @@ const Chat = () => {
 
     socket.once(
       "roomData",
-      ({ roomId, roomName, capacity, createDate, users }) => {
+      ({ roomId, roomName, capacity, createDate, chats, users }) => {
         setRoomId(roomId);
         setRoomName(roomName);
         setCapacity(capacity);
         setCreateDate(createDate);
         setUsers(users);
+
+        const sortChats = Array.from(chats).sort(
+          (a, b) => new Date(a.date) - new Date(b.date)
+        );
+        setChats(sortChats);
 
         socket.on("roomData", ({ users }) => {
           setUsers(users);
@@ -46,8 +51,8 @@ const Chat = () => {
       }
     );
 
-    socket.on("message", ({ userName, text }) => {
-      setMessages((prev) => [...prev, { userName, text }]);
+    socket.on("message", ({ userName, text, date }) => {
+      setChats((prev) => [...prev, { userName, text, date }]);
     });
 
     return () => {
@@ -74,14 +79,18 @@ const Chat = () => {
         </Wrapper>
         <ChatBox>
           <div style={{ padding: "5px 15px 0 15px" }}>
-            {messages.map((item, index) => (
+            {chats.map((item, index) => (
               <div style={{ margin: "15px 0" }} key={index}>
                 {item.userName === "admin" ? (
                   <AdminMessage text={item.text} />
                 ) : item.userName === userName ? (
-                  <MyMessage text={item.text} />
+                  <MyMessage text={item.text} date={item.date} />
                 ) : (
-                  <Message userName={item.userName} text={item.text} />
+                  <Message
+                    userName={item.userName}
+                    text={item.text}
+                    date={item.date}
+                  />
                 )}
               </div>
             ))}

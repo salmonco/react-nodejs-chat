@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { format, register } from "timeago.js";
+import koLocale from "timeago.js/lib/lang/ko";
 
 const StyledMessage = styled.div`
   display: inline-block;
@@ -8,11 +10,20 @@ const StyledMessage = styled.div`
   padding: 7px 10px;
 `;
 
-const Message = ({ userName, text }) => {
+const StyledDate = styled.span`
+  font-size: 10px;
+  vertical-align: bottom;
+  margin: 0 5px;
+`;
+
+register("ko", koLocale);
+
+const Message = ({ userName, text, date }) => {
   return (
     <>
       <p style={{ margin: "0 0 8px 0" }}>{userName}</p>
       <StyledMessage>{text}</StyledMessage>
+      <StyledDate>{format(date, "ko")}</StyledDate>
     </>
   );
 };
@@ -41,10 +52,13 @@ const StyledMyMessage = styled.div`
   padding: 7px 10px;
 `;
 
-const MyMessage = ({ text }) => {
+const MyMessage = ({ text, date }) => {
   return (
     <div style={{ display: "flex", justifyContent: "flex-end" }}>
-      <StyledMyMessage>{text}</StyledMyMessage>
+      <div>
+        <StyledDate>{format(date, "ko")}</StyledDate>
+        <StyledMyMessage>{text}</StyledMyMessage>
+      </div>
     </div>
   );
 };
