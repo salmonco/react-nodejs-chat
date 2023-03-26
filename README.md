@@ -7,6 +7,7 @@
 ### client
 - react, styled-components, context api
 - socket.io-client
+- timeago.js
 
 ### database
 - nosql: firebase-firestore
@@ -22,7 +23,7 @@
 - 방 인원수가 0이 되면 채팅방 사라짐
 
 ### data
-- chat : { userName, text }
+- chat : { userName, text, date, roomId }
 - user : { userId, userName, roomId }
 - room : { roomId, roomName, capacity, createDate }
 
@@ -33,12 +34,12 @@
 - roomId : { roomId }
 
 #### joinRoom
-- message : { userName, text }
-- roomData : { roomId, roomName, capacity, createDate, users }
+- message : { userName, text, date, roomId }
+- roomData : { roomId, roomName, capacity, createDate, chats, users }
 
 #### sendMessage
-- message : { userName, text }
+- message : { userName, text, date, roomId }
 
 #### leaveRoom or disconnect
-- message : { userName, text }
+- message : { userName, text, date, roomId }
 - roomData : { users }
