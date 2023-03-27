@@ -4,10 +4,19 @@ import koLocale from "timeago.js/lib/lang/ko";
 
 const StyledMessage = styled.div`
   display: inline-block;
+  position: relative;
   background: #ffffff;
   border-radius: 10px;
   max-width: 240px;
   padding: 7px 10px;
+  &::after {
+    position: absolute;
+    left: -7px;
+    bottom: 18px;
+    content: "◀";
+    color: #ffffff;
+    transform: rotate(33deg);
+  }
 `;
 
 const StyledDate = styled.span`
@@ -44,22 +53,36 @@ const AdminMessage = ({ text }) => {
   );
 };
 
+const StyledMyWrap = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
 const StyledMyMessage = styled.div`
   display: inline-block;
+  position: relative;
   background: #ffffff;
   border-radius: 10px;
   max-width: 240px;
   padding: 7px 10px;
+  &::after {
+    position: absolute;
+    right: -7px;
+    bottom: 18px;
+    content: "▶";
+    color: #ffffff;
+    transform: rotate(-33deg);
+  }
 `;
 
 const MyMessage = ({ text, date }) => {
   return (
-    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+    <StyledMyWrap>
       <div>
         <StyledDate>{format(date, "ko")}</StyledDate>
         <StyledMyMessage>{text}</StyledMyMessage>
       </div>
-    </div>
+    </StyledMyWrap>
   );
 };
 
